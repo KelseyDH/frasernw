@@ -50,3 +50,16 @@ function favorite(type, id, name) {
     }
   });
 }
+
+function geocode(address) {
+  geocoder = new google.maps.Geocoder();
+  geocoder.geocode( { 'address': address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      alert(results[0].geometry.location);
+    } 
+    else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+
+}

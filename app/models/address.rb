@@ -43,7 +43,18 @@ class Address < ActiveRecord::Base
     
     return output[0..-3]
   end
+  
+  def geocode_address
+    output = ""
     
+    output += "#{address1}, " if address1.present?
+    output += "#{city}, " if city.present?
+    output += "#{city.province.symbol}, " if city.present? && city.province.present?
+    output += "#{postalcode}, "  if postalcode.present?
+    output += "Canada, "
+    
+    return output[0..-3]
+  end
   
   def phone_and_fax
     return "#{phone1}, Fax: #{fax}" if (phone1.present? && fax.present?)

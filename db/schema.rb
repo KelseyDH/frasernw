@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120606212245) do
+ActiveRecord::Schema.define(:version => 20120608022400) do
 
   create_table "addresses", :force => true do |t|
     t.string    "address1"
@@ -25,6 +25,8 @@ ActiveRecord::Schema.define(:version => 20120606212245) do
     t.integer   "city_id"
     t.string    "address2"
     t.integer   "clinic_id"
+    t.float     "latitude",    :default => 0.0
+    t.float     "longitude",   :default => 0.0
   end
 
   add_index "addresses", ["city_id"], :name => "index_addresses_on_city_id"

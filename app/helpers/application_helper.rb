@@ -101,4 +101,12 @@ module ApplicationHelper
     return (current_user and current_user.admin?)
   end
   
+  def to_rad angle
+    angle/180 * Math::PI
+  end
+  
+  def distance( lat1, lon1, lat2, lon2 )
+    r = 6371 # km
+    Math.acos(Math.sin(to_rad lat1)*Math.sin(to_rad lat2) + Math.cos(to_rad lat1)*Math.cos(to_rad lat2) * Math.cos(to_rad (lon2-lon1))) * r;
+  end
 end

@@ -90,6 +90,7 @@
                       %th{:class => "{sorter: 'bylastname'} name_column"} Specialist
                       %th{:class => "{sorter: 'status'} status_column"} Accepting New<br>Patients?
                       %th{:class => "{sorter: 'waittime'} wait_time_column"} Average Patient<br>Wait Time
+                      %th Distance
                       %th{:class => "{sorter: 'blanks_to_bottom'} city_column"} City
                   %tbody
                     - (@specialization.specialists).each do |specialist|
@@ -99,6 +100,9 @@
                           %a.ajax{"href" => specialist_path(specialist)}= specialist.name
                         %td
                           %span{:class => "status_#{specialist.status_class}"}= specialist.status_class
+                        %td
+                          - if specialist.address.present? && specialist.address.latitude != 0.0
+                            = distance(49.2505, -123.1119, specialist.address.latitude, specialist.address.longitude)
                         %td= specialist.waittime
                         %td= specialist.city
                         

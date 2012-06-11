@@ -33,6 +33,12 @@ class Office < ActiveRecord::Base
     return l.present? ? l.city_id : nil
   end
   
+  def resolved_address
+    l = location
+    return "" if l.blank?
+    return l.resolved_address
+  end
+  
   def short_address
     l = location
     return "" if l.blank?

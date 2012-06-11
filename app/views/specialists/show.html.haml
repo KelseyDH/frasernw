@@ -119,6 +119,8 @@
               - if num_specialists > 1
                 with
                 %a.tt{"id" => "tt#{specialist_office.office.id}", "href" => "javascript:void(0)", "onclick" => "$('#tt#{specialist_office.office.id}').tooltip('toggle')", "rel" => "tooltip", "title" => "<ul>#{specialist_office.office.specialists.reject{|s| s.id == @specialist.id}.map{|s| "<li>#{link_to s.name, specialist_path(s), :class => 'ajax'}"}.join('').html_safe}</ul>" }= "#{pluralize(num_specialists-1, 'other specialist')}"
+              %a{"href" => "javascript:void(0)", "onclick" => "geocode('#{escape_javascript(address.short_address)}')"}
+                %i.icon-globe.icon-text
         %p= specialist_office.phone_and_fax if specialist_office.phone_and_fax.present?
         - if specialist_office.direct_info.present?
           %p

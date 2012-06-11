@@ -58,6 +58,13 @@ class Specialist < ActiveRecord::Base
     return o.city
   end
   
+  def address
+    return "" if moved_away?
+    o = offices.first
+    return "" if o.blank?
+    return o.resolved_address
+  end
+  
   def city_id
     return nil if moved_away?
     o = offices.first
