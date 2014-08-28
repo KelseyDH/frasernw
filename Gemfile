@@ -67,6 +67,8 @@ group :development, :test do
   gem 'rails-dev-boost', :git => 'git://github.com/thedarkone/rails-dev-boost.git', :require => 'rails_development_boost'
   gem 'rb-fsevent', '~> 0.9.1'
   gem 'awesome_print'
+  gem 'bullet' #finds inefficient queries
+  gem 'rails-erd' #genereates ERD diagram. Install graphviz then run ~> bundle exec rake erd filetype=dot, open with graphviz to view
 end
 
 gem 'ancestry'

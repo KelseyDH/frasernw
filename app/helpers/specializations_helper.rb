@@ -198,6 +198,7 @@ module SpecializationsHelper
   
   def other_specialists_in_cities(specialization, cities)
     other_specialists = []
+    #related query here flagged by bullet:
     specialization.procedures.each do |p|
       next if p.specializations.length <= 1
       p.specializations.each do |s|

@@ -7,7 +7,7 @@ namespace :pathways do
   
     task :specializations => :environment do
       puts "Recaching specializations..."
-      Specialization.all.sort{ |a,b| a.id <=> b.id }.each do |s|
+      Specialization.unscoped.order(:id).find_each do |s|
         begin
           puts "Specialization #{s.id}"
           expire_fragment specialization_path(s)

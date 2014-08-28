@@ -7,7 +7,7 @@ class SpecializationsController < ApplicationController
   cache_sweeper :specialization_sweeper, :only => [:create, :update, :destroy]
 
   def index
-    @specializations = Specialization.all
+    @specializations = Specialization.includes(:procedure_specializations, :specialists).all
     render :layout => 'ajax' if request.headers['X-PJAX']
   end
 

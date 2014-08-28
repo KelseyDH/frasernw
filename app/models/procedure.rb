@@ -89,6 +89,7 @@ class Procedure < ActiveRecord::Base
       results += ps.specialization.specialists.in_cities(cities)
     else
       ps.subtree.each do |child|
+        #Bullet N+1 flagged below
         Capacity.find_all_by_procedure_specialization_id(child.id).each do |capacity|
           results << capacity.specialist if capacity.specialist.present? && (capacity.specialist.cities & cities).present?
         end
