@@ -7,12 +7,15 @@ class SpecializationsController < ApplicationController
   cache_sweeper :specialization_sweeper, :only => [:create, :update, :destroy]
 
   def index
-    @specializations = Specialization.includes(:procedure_specializations, :specialists).all
+    @specializations = Specialization.includes(:specialists, :clinics, :procedures).all
     render :layout => 'ajax' if request.headers['X-PJAX']
   end
 
   def show
-    @specialization = Specialization.find(params[:id])
+    #@specialization = Specialization.includes(:specialists, clinics: [:focuses, :clinic_locations, :clinic_healthcare_providers, :clinic_speaks]).find(params[:id])
+    @specialization = Specialization.includes(:procedure_specializations, clinics: [:focuses, :clinic_locations ]).find(params[:id])
+    #trying to get instance variables into view:
+    @clinics = @specialization.clinics
     @feedback = FeedbackItem.new
     render :layout => 'ajax' if request.headers['X-PJAX']
   end

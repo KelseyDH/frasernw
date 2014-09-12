@@ -9,9 +9,9 @@ class Specialist < ActiveRecord::Base
   has_many :specializations, :through => :specialist_specializations
 
   # specialists have the capacity to perform procedures
-  has_many   :capacities, :dependent => :destroy
-  has_many   :procedure_specializations, :through => :capacities
-  has_many   :procedures, :through => :procedure_specializations
+  has_many   :capacities, :dependent => :destroy, :include => :capacities
+  has_many   :procedure_specializations, :through => :capacities, :include => :procedure_specializations
+  has_many   :procedures, :through => :procedure_specializations, :include => :procedures
   accepts_nested_attributes_for :capacities, :reject_if => lambda { |c| c[:procedure_specialization_id].blank? }, :allow_destroy => true
   
   # specialists attend clinics
@@ -176,6 +176,7 @@ class Specialist < ActiveRecord::Base
   end
 
   def owners
+    #bullet flagged .blank methods
     if specializations.blank? || divisions.blank?
       return [default_owner]
     else

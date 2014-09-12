@@ -7,7 +7,6 @@ filtering.clinic_data["<%= city.id %>"] = {};
 filtering.clinic_procedures["<%= city.id %>"] = [];
 filtering.clinic_languages["<%= city.id %>"] = [];
 filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
-
 <% specializations.each do |specialization| %>
 
   <% cache(specialization_path(specialization) + "_" + city_path(city)) do %>
@@ -20,12 +19,33 @@ filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
     specialist_associations = Array.new
     specialist_languages = Array.new
     
-    specialists = specialization.specialists.in_cities([city]).reject{ |s| !s.show_in_table? }
+    specialists = Specialist.find_by_specialization(specialization).in_cities([city]).reject{ |s| !s.show_in_table? }
+    #specialists = specialization.specialists.in_cities([city]).reject{ |s| !s.show_in_table? }
     if specialists.length > 0
       -%> has_specialists = true; <%
     end
 
-    specialists.each do |s|
+    #Bullet N+1 issue:  Add to your finder: :include => [:specialist_offices]
+    specialists.includes(:specialist_offices => { :office => 
+                                                      { :location => [
+                                                                      {:address => :city}, 
+                                                                      {:hospital_in => 
+                                                                                            {:location => 
+                                                                                                            { :address => :city} 
+                                                                                            }}, 
+                                                                      {:location_in => 
+                                                                                        [  {:address => :city}, 
+                                                                                           {:hospital_in => 
+                                                                                                            {:location => 
+                                                                                                                          { :address => :city}
+                                                                                                            } 
+                                                                                           }
+                                                                                        ]
+                                                                        }
+                                                                      ]
+                                                      }
+                                                  }
+                  ).each do |s|
       specialist_data[s.id] = Hash.new
       specialist_data[s.id]['attributes'] = s.not_available? ? '' : specialist_filtering_attributes(s, true).join(' ')
       specialist_data[s.id]['name'] = s.name
@@ -73,7 +93,7 @@ filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
       -%> has_clinics = true; <%
     end
 
-    clinics.each do |c|
+    clinics.includes(:procedure_specializations, :clinic_locations, :healthcare_providers, :languages, :specializations).each do |c|
       clinic_data[c.id] = Hash.new
       clinic_data[c.id]['attributes'] = clinic_filtering_attributes(c, false).join(' ')
       clinic_data[c.id]['name'] = c.name

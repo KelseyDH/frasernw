@@ -11,7 +11,7 @@ module FrontHelper
       manual_events["NewsItem_#{news_item.id}"] = ["#{news_item.start_date || news_item.end_date}", item.html_safe]
     end
     
-    Version.includes(:item).order("id desc").where("item_type in (?)", ["Specialist", "SpecialistOffice", "ClinicLocation"]).limit(2000).each do |version|
+    Version.order("id desc").where("item_type in (?)", ["Specialist", "SpecialistOffice", "ClinicLocation"]).limit(2000).includes(:item).each do |version|
     
       next if version.item.blank?
       break if automated_events.length >= max_automated_events
@@ -20,7 +20,7 @@ module FrontHelper
       
         if version.item_type == "Specialist"
           
-          specialist = version.item
+          specialist = version.item.includes(:specializations)
           next if specialist.blank? || specialist.in_progress_for_divisions(divisions)
           specialist_divisions = specialist.cities_for_front_page.map{ |city| city.divisions }.flatten.uniq
           next if (specialist_divisions & divisions).blank?
