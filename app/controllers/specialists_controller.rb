@@ -9,15 +9,15 @@ class SpecialistsController < ApplicationController
 
   def index
     if params[:specialization_id].present?
-      @specializations = [Specialization.includes(:procedure_specializations).find(params[:specialization_id])]
+      @specializations = Specialization.includes[:procedure_specializations].find(params[:specialization_id])
     else
-      @specializations = Specialization.includes(:procedure_specializations).all
+      @specializations = Specialization.includes[:procedure_specializations].all
     end
     render :layout => 'ajax' if request.headers['X-PJAX']
   end
 
   def show
-    @specialist = Specialist.includes[:specialist_offices, :specializations, :clinics, :hospitals, :languages, :offices).find(params[:id])
+    @specialist = Specialist.includes[:specialist_offices, :specializations, :clinics, :hospitals, :languages, :offices].find(params[:id])
     @feedback = @specialist.feedback_items.build
     render :layout => 'ajax' if request.headers['X-PJAX']
   end
