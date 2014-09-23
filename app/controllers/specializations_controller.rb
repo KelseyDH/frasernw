@@ -94,13 +94,13 @@ class SpecializationsController < ApplicationController
   end
   
   def refresh_cache
-    @specialization = Specialization.find(params[:id])
+    @specialization = Specialization.includes(:specialists).find(params[:id])
     @feedback = FeedbackItem.new
     render :show, :layout => 'ajax'
   end
   
   def refresh_city_cache
-    @specialization = Specialization.find(params[:id])
+    @specialization = Specialization.includes(:specialists).find(params[:id])
     @city = City.find(params[:city_id])
     render 'refresh_city.js'
   end
