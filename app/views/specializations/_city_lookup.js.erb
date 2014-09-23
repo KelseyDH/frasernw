@@ -7,7 +7,7 @@ filtering.clinic_data["<%= city.id %>"] = {};
 filtering.clinic_procedures["<%= city.id %>"] = [];
 filtering.clinic_languages["<%= city.id %>"] = [];
 filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
-<% specializations.each do |specialization| %>
+<% specializations.find_each do |specialization| %>
 
   <% cache(specialization_path(specialization) + "_" + city_path(city)) do %>
   
@@ -45,7 +45,7 @@ filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
                                                                       ]
                                                       }
                                                   }
-                  ).each do |s|
+                  ).find_each do |s|
       specialist_data[s.id] = Hash.new
       specialist_data[s.id]['attributes'] = s.not_available? ? '' : specialist_filtering_attributes(s, true).join(' ')
       specialist_data[s.id]['name'] = s.name
@@ -63,7 +63,7 @@ filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
 
     #broken apart as we only want to record the procedures and associations for the specialists directly in our city, and only for specialization pages
     if other
-      other_specialists_in_cities(specialization, [city]).flatten.uniq.reject{ |s| !s.show_in_table? }.each do |s|
+      other_specialists_in_cities(specialization, [city]).flatten.uniq.reject{ |s| !s.show_in_table? }.find_each do |s|
         specialist_data[s.id] = Hash.new
         specialist_data[s.id]['attributes'] = s.not_available? ? '' : specialist_filtering_attributes(s, false).join(' ')
         specialist_data[s.id]['name'] = s.name
@@ -93,7 +93,7 @@ filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
       -%> has_clinics = true; <%
     end
 
-    clinics.includes(:procedure_specializations, :clinic_locations, :healthcare_providers, :languages, :specializations).each do |c|
+    clinics.includes(:procedure_specializations, :clinic_locations, :healthcare_providers, :languages, :specializations).find_each do |c|
       clinic_data[c.id] = Hash.new
       clinic_data[c.id]['attributes'] = clinic_filtering_attributes(c, false).join(' ')
       clinic_data[c.id]['name'] = c.name
@@ -111,7 +111,7 @@ filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
 
     #broken apart as we only want to record the procedures and associations for the clinics directly in our city, and only for specialization pages
     if other
-      other_clinics_in_cities(specialization, [city]).flatten.uniq.reject{ |c| !c.show_in_table? }.each do |c|
+      other_clinics_in_cities(specialization, [city]).flatten.uniq.reject{ |c| !c.show_in_table? }.find_each do |c|
         clinic_data[c.id] = Hash.new
         clinic_data[c.id]['attributes'] = clinic_filtering_attributes(c, false).join(' ')
         clinic_data[c.id]['name'] = c.name
