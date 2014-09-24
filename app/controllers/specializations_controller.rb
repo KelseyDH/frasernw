@@ -13,7 +13,7 @@ class SpecializationsController < ApplicationController
 
   def show
     #@specialization = Specialization.includes(:specialists, clinics: [:focuses, :clinic_locations, :clinic_healthcare_providers, :clinic_speaks]).find(params[:id])
-    @specialization = Specialization.includes(:procedure_specializations, clinics: [:focuses, :clinic_locations ]).find(params[:id])
+    @specialization = Specialization.includes(:procedure_specializations, :specialists, clinics: [:focuses, :clinic_locations ]).find(params[:id])
     #trying to get instance variables into view:
     @clinics = @specialization.clinics
     @feedback = FeedbackItem.new
