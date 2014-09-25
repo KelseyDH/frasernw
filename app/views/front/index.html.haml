@@ -10,15 +10,19 @@
   
 %script{"type" => "text/javascript"}
   $(document).ready(function() { update_favorites() });
-    
+
+-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # ##
+-# ##FUTURE: refactor variables here to Front#Index, add @ where appropriate:
 - user_divisions = current_user_divisions
 
 - if current_user_is_admin?
+  -# kelseynote: @division is not instantiated in Front#Index controller:
   - user_divisions = @division.present? ? [@division] : [user_divisions.first]
   
 - can_edit = current_user_is_super_admin? || (current_user_divisions & user_divisions).present?
 
 - specializations = current_user_is_admin? ? Specialization.all : Specialization.not_in_progress_for_divisions(user_divisions).uniq
+-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # ##
 
 .content-wrapper
   .content#front{:style => current_user_is_admin? && 'margin-top: -15px'}
@@ -86,7 +90,7 @@
         - if current_user_is_admin? && can_edit
           %p.admin.btn-group
             = link_to("<i class='icon-pencil'></i>".html_safe + " Edit Latest Specialist and Clinic Updates", news_items_path, :class => "btn btn-mini ajax")
-            
+        -# FUTURE: refactor below to controller  
         - divisional_updates = NewsItem.divisional_in_divisions(user_divisions)
         - if divisional_updates.length > 0
           
@@ -103,7 +107,7 @@
         - if current_user_is_admin? && can_edit
           %p.admin.btn-group
             = link_to("<i class='icon-pencil'></i>".html_safe + " Edit Division Updates", news_items_path, :class => "btn btn-mini ajax")
-            
+        -# FUTURE: refactor below to controller   
         - attachment_updates = NewsItem.attachment_in_divisions(user_divisions)
         - if attachment_updates.length > 0
           
@@ -120,7 +124,7 @@
         - if current_user_is_admin? && can_edit
           %p.admin.btn-group
             = link_to("<i class='icon-pencil'></i>".html_safe + " Edit Attachment Updates", news_items_path, :class => "btn btn-mini ajax")
-            
+        -# FUTURE: refactor below to controller
         - shared_care_updates = NewsItem.shared_care_in_divisions(user_divisions)
         - if shared_care_updates.length > 0
             

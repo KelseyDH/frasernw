@@ -1,7 +1,9 @@
 class FrontController < ApplicationController
   load_and_authorize_resource
   include ApplicationHelper
-  
+  ## kelseynote: FUTURE refactor:
+  # before_filter :latest_specialists_and_clinics_updates_variables, only: :index
+
   def index
     @front = Front.first
     @front = Front.create if @front.blank?
@@ -20,9 +22,7 @@ class FrontController < ApplicationController
   def terms_and_conditions
     render :layout => 'ajax' if request.headers['X-PJAX']
   end
-  
-  
-  
+
   def edit
     @front = Front.first
     @front = Front.create if @front.blank?
@@ -68,4 +68,16 @@ class FrontController < ApplicationController
       render :action => 'edit'
     end
   end
+
+  # kelseynote: FUTURE Potential Refactor of Front#Index
+  # private
+
+  # def latest_specialists_and_clinics_updates_variables
+  #   @user_divisions = current_user_divisions
+  #   if current_user_is_admin?
+  #     @user_divisions = @division.present? ? [@division] : [@user_divisions.first]
+  #     can_edit = current_user_is_super_admin? || (current_user_divisions & @user_divisions).present?
+  #     @specializations = current_user_is_admin? ? Specialization.all : Specialization.not_in_progress_for_divisions(@user_divisions).uniq
+  #   end
+  # end
 end
