@@ -43,8 +43,8 @@ class SpecialistsController < ApplicationController
       l = o.build_location
       l.build_address
     end
-    @offices = Office.includes(:location => [ {:address => :city}, {:location_in => [{:address => :city}, {:hospital_in => {:location => {:address => :city}}}]}, {:hospital_in => {:location => {:address => :city}}} ]).all.reject{|o| o.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|o| ["#{o.short_address}, #{o.city}", o.id]}
-    @specializations_clinics = (current_user_is_super_admin? ? @specialization.clinics : @specialization.clinics.in_divisions(current_user_divisions)).map{ |c| c.locations }.flatten.map{ |l| ["#{l.locatable.clinic.name} - #{l.short_address}", l.id] }
+    @offices = Office.includes(:location => [ {:address => :city}, {:location_in => [{:address => :city}, {:hospital_in => {:location => {:address => :city}}}]}, {:hospital_in => {:location => {:address => :city}}} ]).all.reject{|off| off.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|obj| ["#{obj.short_address}, #{obj.city}", obj.id]}
+    @specializations_clinics = (current_user_is_super_admin? ? @specialization.clinics : @specialization.clinics.in_divisions(current_user_divisions)).map{ |c| c.locations }.flatten.map{ |loc| ["#{loc.locatable.clinic.name} - #{loc.short_address}", loc.id] }
     @specializations_clinic_locations = (current_user_is_super_admin? ? @specialization.clinics : @specialization.clinics.in_divisions(current_user_divisions)).map{ |c| c.clinic_locations.reject{ |cl| cl.empty? } }.flatten.map{ |cl| ["#{cl.clinic.name} - #{cl.location.short_address}", cl.id] }
     @specializations_procedures = ancestry_options( @specialization.non_assumed_procedure_specializations_arranged )
     @capacities = []
@@ -113,21 +113,31 @@ class SpecialistsController < ApplicationController
       o = os.build_office
       l = o.build_location
     end
-    @offices = Office.includes(:location => [ {:address => :city}, {:location_in => [{:address => :city}, {:hospital_in => {:location => {:address => :city}}}]}, {:hospital_in => {:location => {:address => :city}}} ]).all.reject{|o| o.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|o| ["#{o.short_address}, #{o.city}", o.id]}
+    @offices = Office.includes(:location => [ {:address => :city}, {:location_in => [{:address => :city}, {:hospital_in => {:location => {:address => :city}}}]}, {:hospital_in => {:location => {:address => :city}}} ]).all.reject{|off| off.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|obj| ["#{obj.short_address}, #{obj.city}", obj.id]}
+    
+    # @offices = Office.includes(:location => 
+    #                                         [ {:address => :city}, {:location_in => 
+    #                                                                                [{:address => :city}, {:hospital_in => 
+    #                                                                                                                      {:location => 
+    #                                                                                                                                   {:address => :city}}}]}, 
+    #                                                                 {:hospital_in => 
+    #                                                                                 {:location => 
+    #                                                                                              {:address => :city}}} ]
+    #                           ).all.reject{|o| o.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|o| ["#{o.short_address}, #{o.city}", o.id]}
     @specializations_clinics = []
     @specializations_clinic_locations = []
-    @specialist.specializations.each { |s|
-      @specializations_clinics += (current_user_is_super_admin? ? s.clinics : s.clinics.in_divisions(current_user_divisions)).map{ |c| c.locations }.flatten.map{ |l| ["#{l.locatable.clinic.name} - #{l.short_address}", l.id] }
-      @specializations_clinic_locations += (current_user_is_super_admin? ? s.clinics : s.clinics.in_divisions(current_user_divisions)).map{ |c| c.clinic_locations.reject{ |cl| cl.empty? } }.flatten.map{ |cl| ["#{cl.clinic.name} - #{cl.location.short_address}", cl.id] }
+    @specialist.specializations.each { |spec|
+      @specializations_clinics += (current_user_is_super_admin? ? spec.clinics : spec.clinics.in_divisions(current_user_divisions)).map{ |c| c.locations }.flatten.map{ |loc| ["#{loc.locatable.clinic.name} - #{loc.short_address}", loc.id] }
+      @specializations_clinic_locations += (current_user_is_super_admin? ? spec.clinics : spec.clinics.in_divisions(current_user_divisions)).map{ |c| c.clinic_locations.reject{ |cl| cl.empty? } }.flatten.map{ |cl| ["#{cl.clinic.name} - #{cl.location.short_address}", cl.id] }
     }
     @specializations_clinics.sort!
     @specializations_clinic_locations.sort!
     @specializations_procedures = []
     procedure_specializations = {}
-    @specialist.specializations.each { |s|
-      @specializations_procedures << [ "----- #{s.name} -----", nil ] if @specialist.specializations.count > 1
-      @specializations_procedures += ancestry_options( s.non_assumed_procedure_specializations_arranged )
-      procedure_specializations.merge!(s.non_assumed_procedure_specializations_arranged)
+    @specialist.specializations.each { |spec|
+      @specializations_procedures << [ "----- #{spec.name} -----", nil ] if @specialist.specializations.count > 1
+      @specializations_procedures += ancestry_options( spec.non_assumed_procedure_specializations_arranged )
+      procedure_specializations.merge!(spec.non_assumed_procedure_specializations_arranged)
     }
     capacities_procedure_list = []
     @capacities = []
@@ -270,21 +280,21 @@ class SpecialistsController < ApplicationController
         o = os.build_office
         l = o.build_location
       end
-      @offices = Office.includes(:location => [ {:address => :city}, {:location_in => [{:address => :city}, {:hospital_in => {:location => {:address => :city}}}]}, {:hospital_in => {:location => {:address => :city}}} ]).all.reject{|o| o.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|o| ["#{o.short_address}, #{o.city}", o.id]}
+      @offices = Office.includes(:location => [ {:address => :city}, {:location_in => [{:address => :city}, {:hospital_in => {:location => {:address => :city}}}]}, {:hospital_in => {:location => {:address => :city}}} ]).all.reject{|off| off.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|obj| ["#{obj.short_address}, #{obj.city}", obj.id]}
       @specializations_clinics = []
       @specializations_clinic_locations = []
-      @specialist.specializations.each { |s|
-        @specializations_clinics += s.clinics.map{ |c| c.locations }.flatten.map{ |l| ["#{l.locatable.clinic.name} - #{l.short_address}", l.id] }
-        @specializations_clinic_locations += (current_user_is_super_admin? ? s.clinics : s.clinics.in_divisions(current_user_divisions)).map{ |c| c.clinic_locations.reject{ |cl| cl.empty? } }.flatten.map{ |cl| ["#{cl.clinic.name} - #{cl.location.short_address}", cl.id] }
+      @specialist.specializations.each { |spe|
+        @specializations_clinics += spe.clinics.map{ |c| c.locations }.flatten.map{ |loc| ["#{loc.locatable.clinic.name} - #{l.short_address}", l.id] }
+        @specializations_clinic_locations += (current_user_is_super_admin? ? spe.clinics : spe.clinics.in_divisions(current_user_divisions)).map{ |c| c.clinic_locations.reject{ |cl| cl.empty? } }.flatten.map{ |cl| ["#{cl.clinic.name} - #{cl.location.short_address}", cl.id] }
       }
       @specializations_clinics.sort!
       @specializations_clinic_locations.sort!
       @specializations_procedures = []
       procedure_specializations = {}
-      @specialist.specializations.each { |s|
-        @specializations_procedures << [ "----- #{s.name} -----", nil ] if @specialist.specializations.count > 1
-        @specializations_procedures += ancestry_options( s.non_assumed_procedure_specializations_arranged )
-        procedure_specializations.merge!(s.non_assumed_procedure_specializations_arranged)
+      @specialist.specializations.each { |spe|
+        @specializations_procedures << [ "----- #{spe.name} -----", nil ] if @specialist.specializations.count > 1
+        @specializations_procedures += ancestry_options( spe.non_assumed_procedure_specializations_arranged )
+        procedure_specializations.merge!(spe.non_assumed_procedure_specializations_arranged)
       }
       capacities_procedure_list = []
       @capacities = []
@@ -335,21 +345,21 @@ class SpecialistsController < ApplicationController
         o = os.build_office
         l = o.build_location
       end
-      @offices = Office.includes(:location => [ {:address => :city}, {:location_in => [{:address => :city}, {:hospital_in => {:location => {:address => :city}}}]}, {:hospital_in => {:location => {:address => :city}}} ]).all.reject{|o| o.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|o| ["#{o.short_address}, #{o.city}", o.id]}
+      @offices = Office.includes(:location => [ {:address => :city}, {:location_in => [{:address => :city}, {:hospital_in => {:location => {:address => :city}}}]}, {:hospital_in => {:location => {:address => :city}}} ]).all.reject{|off| off.empty? }.sort{|a,b| "#{a.city} #{a.short_address}" <=> "#{b.city} #{b.short_address}"}.collect{|obj| ["#{obj.short_address}, #{obj.city}", obj.id]}
       @specializations_clinics = []
       @specializations_clinic_locations = []
-      @specialist.specializations.each { |s|
-        @specializations_clinics += s.clinics.map{ |c| c.locations }.flatten.map{ |l| ["#{l.locatable.clinic.name} - #{l.short_address}", l.id] }
-        @specializations_clinic_locations += (current_user_is_super_admin? ? s.clinics : s.clinics.in_divisions(current_user_divisions)).map{ |c| c.clinic_locations.reject{ |cl| cl.empty? } }.flatten.map{ |cl| ["#{cl.clinic.name} - #{cl.location.short_address}", cl.id] }
+      @specialist.specializations.each { |spec|
+        @specializations_clinics += spec.clinics.map{ |c| c.locations }.flatten.map{ |loc| ["#{loc.locatable.clinic.name} - #{loc.short_address}", loc.id] }
+        @specializations_clinic_locations += (current_user_is_super_admin? ? spec.clinics : spec.clinics.in_divisions(current_user_divisions)).map{ |c| c.clinic_locations.reject{ |cl| cl.empty? } }.flatten.map{ |cl| ["#{cl.clinic.name} - #{cl.location.short_address}", cl.id] }
       }
       @specializations_clinics.sort!
       @specializations_clinic_locations.sort!
       @specializations_procedures = []
       procedure_specializations = {}
-      @specialist.specializations.each { |s|
-        @specializations_procedures << [ "----- #{s.name} -----", nil ] if @specialist.specializations.count > 1
-        @specializations_procedures += ancestry_options( s.non_assumed_procedure_specializations_arranged )
-        procedure_specializations.merge!(s.non_assumed_procedure_specializations_arranged)
+      @specialist.specializations.each { |spec|
+        @specializations_procedures << [ "----- #{spec.name} -----", nil ] if @specialist.specializations.count > 1
+        @specializations_procedures += ancestry_options( spec.non_assumed_procedure_specializations_arranged )
+        procedure_specializations.merge!(spec.non_assumed_procedure_specializations_arranged)
       }
       capacities_procedure_list = []
       @capacities = []
