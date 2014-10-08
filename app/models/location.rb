@@ -36,11 +36,17 @@ class Location < ActiveRecord::Base
   end
   
   def short_address
-    output = ""
-    output += "##{suite_in}, " if suite_in.present? && (in_hospital? || in_clinic?)
-    output += "In #{hospital_in.name} " if in_hospital?
-    output += "In #{location_in.locatable.clinic.name} " if in_clinic?
-    output +=  "#{resolved_address.short_address}" if resolved_address.present?
+    if location_in.nil?
+      logger.debug "DATAISSUEALERT:location_in NIL ERROR"
+    else
+      output = ""
+      output += "##{suite_in}, " if suite_in.present? && (in_hospital? || in_clinic?)
+      output += "In #{hospital_in.name} " if in_hospital?
+      if location_in.locatable.present?
+        output += "In #{location_in.locatable.clinic.name} " if in_clinic?
+      end
+      output +=  "#{resolved_address.short_address}" if resolved_address.present?
+    end
     return output
   end
   
