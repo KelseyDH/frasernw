@@ -253,7 +253,7 @@
 
               -if @specialist.lagtime.present?
                 %p
-                  Average length of time to notify GP of a booking date:
+                  Average length of time to notify GP or patient of a booking date:
                   %strong= @specialist.lagtime
                   
               - @specialist.capacities.specialist_wait_time.each do |capacity|
