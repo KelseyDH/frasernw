@@ -162,9 +162,13 @@
                       
               -if @clinic.lagtime.present?
                 %p
-                  Average length of time to notify GP of a booking date:
-                  %strong= @clinic.lagtime
-                  
+                  -if @clinic.respond_to_patient?
+                    Average length of time to notify GP or patient of a booking date:
+                    %strong= @clinic.lagtime
+                  -else
+                    Average length of time to notify GP of a booking date:
+                    %strong= @clinic.lagtime                  
+
               - @clinic.focuses.clinic_wait_time.each do |focus|
               
                 - if focus.waittime.present? || focus.lagtime.present?
