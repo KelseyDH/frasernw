@@ -28,6 +28,10 @@ Frasernw::Application.configure do
   
   #imagemagick path
   Paperclip.options[:command_path] = "/usr/local/bin/"
+
+
+  config.assets.digest = true
+
 end
 
 ActionMailer::Base.smtp_settings = {

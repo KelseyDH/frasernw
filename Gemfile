@@ -4,6 +4,7 @@ ruby "1.9.3"
 gem 'rails', '3.1.12'
 gem 'pg'
 
+#will break assets precompile locally:
 group :production do
   gem 'heroku_cloud_backup'
 end
