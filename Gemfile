@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 ruby "1.9.3"
-gem 'rails', '3.1.10'
+gem 'rails', '3.1.12'
 gem 'pg'
 
 group :production do
@@ -69,6 +69,10 @@ group :development, :test do
   gem 'awesome_print'
   gem 'bullet' #finds inefficient queries
   gem 'rails-erd' #genereates ERD diagram. Install graphviz then run ~> bundle exec rake erd filetype=dot, open with graphviz to view
+end
+
+group :development do
+  gem 'pry-rails' # loads pry by default with rails c
 end
 
 gem 'ancestry'

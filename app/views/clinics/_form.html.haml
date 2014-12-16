@@ -325,7 +325,7 @@
                 = a.association :city, as: :select, collection: (current_user_is_super_admin? ? City.all : City.in_divisions(current_user_divisions)).map { |c| ["#{c.name}, #{c.province.symbol}", c.id] }, :include_blank => true
                 = a.input :postalcode, :input_html => { :class => "span1" }
             %div{:class => "hospital_#{index}"}
-              = l.association :hospital_in, as: :select, collection: (current_user_is_super_admin? ? Hospital.all : Hospital.in_divisions(current_user_divisions)), :include_blank => true
+              = l.association :hospital_in, as: :select, collection: (current_user_is_super_admin? ? Hospital.all : Hospital.in_divisions(current_user_divisions)).reject{ |h| h.location.blank? }.map{ |h| ["#{h.name}, #{h.location.short_address}", h.id] }, :include_blank => true
             %div{:class => "details_#{index}"}
               = l.input :suite_in, :input_html => { :class => "span1" }
               = l.input :details_in
@@ -371,9 +371,9 @@
     
       %hr  
     
-      %h3 Senior MOA Contact Information
+      %h3 Senior Office Contact Information
       .alert.alert-info
-        %p.no_indent Please note: the following Senior MOA contact information is never shown on Pathways to users.
+        %p.no_indent Please note: the following Senior office contact information is never shown on Pathways to users.
         %p.space.no_indent It will only be used for contact by Pathways administrators related to keeping your office's information up-to-date.
       = f.input :contact_name
       = f.input :contact_email

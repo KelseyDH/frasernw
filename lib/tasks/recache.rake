@@ -42,6 +42,14 @@ namespace :pathways do
       end
     end
   
+    task :procedures => :environment do
+      puts "Recaching procedures..."
+      Procedure.all.sort{ |a,b| a.id <=> b.id }.each do |p|
+        puts "Procedure #{p.id}"
+        expire_fragment procedure_path(p)
+      end
+    end
+  
     task :specialists => :environment do
       puts "Recaching specialists..."
       Specialist.all.sort{ |a,b| a.id <=> b.id }.each do |s|
@@ -80,14 +88,27 @@ namespace :pathways do
   
     task :search => :environment do
       puts "Recaching search..."
+      
+      puts "Global"
       expire_fragment "livesearch_global"
       Net::HTTP.get( URI("http://#{APP_CONFIG[:domain]}/refresh_livesearch_global.js") )
+      
+      puts "All entries"
       expire_fragment "livesearch_all_entries"
-      Net::HTTP.get( URI("http://#{APP_CONFIG[:domain]}/refresh_livesearch_all_entries.js") )
+      Specialization.all.each do |s|
+        puts "All entries specialization #{s.id}"
+        expire_fragment "livesearch_all_entries_#{specialization_path(s)}"
+        Net::HTTP.get( URI("http://#{APP_CONFIG[:domain]}/refresh_livesearch_all_entries/#{s.id}.js") )
+      end
+      
       Division.all.each do |d|
         puts "Search division #{d.id}"
         expire_fragment "livesearch_#{division_path(d)}_entries"
-        Net::HTTP.get( URI("http://#{APP_CONFIG[:domain]}/refresh_livesearch_division_entries/#{d.id}.js") )
+        Specialization.all.each do |s|
+          puts "Search division #{d.id} specialization #{s.id}"
+          expire_fragment "livesearch_#{division_path(d)}_#{specialization_path(s)}_entries"
+          Net::HTTP.get( URI("http://#{APP_CONFIG[:domain]}/refresh_livesearch_division_entries/#{d.id}/#{s.id}.js") )
+        end
         expire_fragment "livesearch_#{division_path(d)}_content"
         Net::HTTP.get( URI("http://#{APP_CONFIG[:domain]}/refresh_livesearch_division_content/#{d.id}.js") )
       end
@@ -123,7 +144,7 @@ namespace :pathways do
     end
 
     #purposeful order from least important to most important, to keep cache 'hot'
-    task :all => [:languages, :hospitals, :clinics, :specialists, :sc_categories, :specializations, :menus, :search, :front] do
+    task :all => [:procedures, :languages, :hospitals, :clinics, :specialists, :sc_categories, :specializations, :menus, :search, :front] do
       puts "All pages recached."
     end
   
@@ -134,17 +155,18 @@ namespace :pathways do
       Specialization.all.each do |s|
         puts "Specialization #{s.name}"
         expire_fragment specialization_path(s)
-        
+
         #expire the grouped together cities
         User.all.map{ |u| City.for_user_in_specialization(u, s).map{ |c| c.id } }.uniq.each do |city_group|
-          puts "Cities #{city_group.join(' ')}"
           expire_fragment "specialization_#{s.id}_content_cities_#{city_group.join('_')}"
         end
-        
-        #expire the grouped together divisions
-        User.all.map{ |u| u.divisions.map{ |d| d.id } }.uniq.each do |division_group|
+      end
+
+      #expire the grouped together divisions
+      User.all.map{ |u| u.divisions.map{ |d| d.id } }.uniq.each do |division_group|
+        puts "Divisions #{division_group.join(' ')}"
+        Specialization.all.each do |s|
           expire_fragment "specialization_#{s.id}_content_divisions_#{division_group.join('_')}"
-          puts "Divisions #{division_group.join(' ')}"
         end
       end
     end

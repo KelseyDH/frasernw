@@ -53,8 +53,14 @@ class DivisionsController < ApplicationController
         new_so.in_progress = old_so.in_progress
         new_so.owner = old_so.owner.super_admin? ? old_so.owner : default_owner
         new_so.content_owner = old_so.content_owner.super_admin? ? old_so.content_owner : default_owner
-        new_so.open_to_clinic_tab = old_so.open_to_clinic_tab
+        new_so.open_to_type = old_so.open_to_type
+        new_so.open_to_sc_category_id = old_so.open_to_sc_category_id
         new_so.is_new = old_so.is_new
+        new_so.show_specialist_categorization_1 = old_so.show_specialist_categorization_1
+        new_so.show_specialist_categorization_2 = old_so.show_specialist_categorization_2
+        new_so.show_specialist_categorization_3 = old_so.show_specialist_categorization_3
+        new_so.show_specialist_categorization_4 = old_so.show_specialist_categorization_4
+        new_so.show_specialist_categorization_5 = old_so.show_specialist_categorization_5
         new_so.save
       end
       redirect_to @division, :notice => "Successfully created division."
