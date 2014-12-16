@@ -69,6 +69,7 @@ group :development, :test do
   gem 'awesome_print'
   gem 'bullet' #finds inefficient queries
   gem 'rails-erd' #genereates ERD diagram. Install graphviz then run ~> bundle exec rake erd filetype=dot, open with graphviz to view
+  gem 'oink'
 end
 
 group :development do

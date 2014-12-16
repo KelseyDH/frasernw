@@ -26,19 +26,19 @@ filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
     end
 
     #Bullet N+1 issue:  Add to your finder: :include => [:specialist_offices]
-    # specialists.includes(:specialist_offices => { :office => 
+    # specialists.includes(:specialist_offices => { :office =>
     #                                                   { :location => [
-    #                                                                   {:address => :city}, 
-    #                                                                   {:hospital_in => 
-    #                                                                                         {:location => 
-    #                                                                                                         { :address => :city} 
-    #                                                                                         }}, 
-    #                                                                   {:location_in => 
-    #                                                                                     [  {:address => :city}, 
-    #                                                                                        {:hospital_in => 
-    #                                                                                                         {:location => 
+    #                                                                   {:address => :city},
+    #                                                                   {:hospital_in =>
+    #                                                                                         {:location =>
+    #                                                                                                         { :address => :city}
+    #                                                                                         }},
+    #                                                                   {:location_in =>
+    #                                                                                     [  {:address => :city},
+    #                                                                                        {:hospital_in =>
+    #                                                                                                         {:location =>
     #                                                                                                                       { :address => :city}
-    #                                                                                                         } 
+    #                                                                                                         }
     #                                                                                        }
     #                                                                                     ]
     #                                                                     }
@@ -95,7 +95,8 @@ filtering.clinic_healthcare_providers["<%= city.id %>"] = [];
       -%> has_clinics = true; <%
     end
 
-    clinics.includes(:procedure_specializations, :clinic_locations, :healthcare_providers, :languages, :specializations).each do |c|
+    #clinics.includes(:procedure_specializations, :clinic_locations, :healthcare_providers, :languages, :specializations).each do |c|
+    clinics.each do |c|
       clinic_data[c.id] = Hash.new
       clinic_data[c.id]['attributes'] = clinic_filtering_attributes(c, false).join(' ')
       clinic_data[c.id]['name'] = c.name
