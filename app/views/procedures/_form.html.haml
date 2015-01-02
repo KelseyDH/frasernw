@@ -1,7 +1,7 @@
 = simple_nested_form_for @procedure, :html => { :class => "form-horizontal ajax" } do |f|
   - if not f.error_messages.blank?
     .alert.alert-error= f.error_messages
-  
+
   = f.input :name
 
   %h3 Specialities This Area of Practice Belongs To
@@ -37,4 +37,3 @@
   .form-actions
     = f.button :submit, :class => "btn btn-primary"
     = link_to 'Cancel', procedures_path, :class => "btn btn-danger ajax"
-    
