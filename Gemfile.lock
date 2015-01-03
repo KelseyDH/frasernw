@@ -122,6 +122,9 @@ GEM
       activesupport (~> 3.0)
       haml (~> 3.0)
       railties (~> 3.0)
+    handle_invalid_percent_encoding_requests (1.0.2)
+      rack-utf8_sanitizer
+      rails (>= 3.1)
     hash-deep-merge (0.1.1)
     heroku (2.10.0)
       launchy (>= 0.3.2)
@@ -204,6 +207,8 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    rack-utf8_sanitizer (1.2.4)
+      rack (~> 1.0)
     rails (3.1.12)
       actionmailer (= 3.1.12)
       actionpack (= 3.1.12)
@@ -314,6 +319,7 @@ DEPENDENCIES
   guard-rspec
   guard-spork
   haml-rails
+  handle_invalid_percent_encoding_requests
   heroku_cloud_backup
   htmlentities
   jquery-datatables-rails

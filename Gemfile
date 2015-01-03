@@ -76,6 +76,7 @@ end
 gem 'ancestry'
 gem 'mechanize'
 gem 'validates_email_format_of'
+gem "handle_invalid_percent_encoding_requests" #rails engine to fix Rack issue of parameters having invalid % encoding: http://stackoverflow.com/questions/24648206/ruby-on-rails-invalid-byte-sequence-in-utf-8-due-to-bot
 
 # Google Analytics
 gem 'gattica', :git => 'git://github.com/chrisle/gattica.git'
