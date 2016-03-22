@@ -16,4 +16,8 @@ class Evidence < ActiveRecord::Base
   def definition_as_html
     BlueCloth.new(definition).to_html.html_safe
   end
+
+  def foreign_key_name # for HistoryNode
+    level
+  end
 end

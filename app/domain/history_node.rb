@@ -15,6 +15,22 @@ class HistoryNode
 
   # add 'parent'?/ 'on'?
 
+  # # # NAMED_FOREIGN_KEYS
+  # # Shows changesets of foreign key columns using their human names.  So ScItem evidence_id would show: "x changed from 'B' to 'C'" rather than "x changed from '2' to '3'"
+  # # To use, add the instance method `foreign_key_name` to the foreign_key attribute's model to specify what foreign key value to show (a), then reference add the attribute's foreign key / Model hash below (b):
+  # # a) Evidence#foreign_key_name
+  # # b) "evidence_id" => Evidence
+
+  NAMED_FOREIGN_KEYS = {"evidence_id" => Evidence}
+
+  def self.show_attribute(attribute, changeset_value)
+    if NAMED_FOREIGN_KEYS.include?(attribute) && NAMED_FOREIGN_KEYS[attribute].safe_find(changeset_value).present?
+      NAMED_FOREIGN_KEYS[attribute].safe_find(changeset_value).try(:foreign_key_name) # E.g. Evidence.find(2).foreign_key_name => "B"
+    else
+      changeset_value
+    end
+  end
+
   attr_reader :raw
   delegate :datetime, :changeset, :secret_editor, to: :raw
 
